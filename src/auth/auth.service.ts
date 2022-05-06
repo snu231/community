@@ -28,7 +28,7 @@ export class AuthService {
 
     }
 
-    async signIn(loginInfo : LoginlDto) : Promise<{accessToken: string}> {
+    async signIn(loginInfo : LoginlDto) : Promise<  string> {
 
         const userID = await this.userRepository.signIn(loginInfo);
 
@@ -38,7 +38,7 @@ export class AuthService {
         const payload : JwtPayload = { userID };
         const accessToken = await this.jwtService.sign(payload);
         
-        return {accessToken };
+        return accessToken ;
     }
     /*
     async logout() : Promise<{}>{

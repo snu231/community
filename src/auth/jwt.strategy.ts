@@ -5,8 +5,11 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { UserRepository } from './user.repository';
 import { User } from './user.entity';
 
-@Injectable()
+import * as config from 'config';
 
+const jwtConfig = config.get('jwt');
+
+@Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
 
     constructor(
@@ -14,10 +17,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         private userRepository : UserRepository
     ){
         super({
-            secretOrKey : 'Secret1234',
+            secretOrKey : jwtConfig.secret,
+
+            
             
             jwtFromRequest: ExtractJwt.fromExtractors([
                 (request) => {
+                    //console.log(request?.cookies);
                     return request?.cookies?.Authentication;
                 },
             ]),

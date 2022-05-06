@@ -6,11 +6,12 @@ import { AppService } from './app.service';
 import { BoardsModule } from './boards/boards.module';
 import { ConfigModule } from '@nestjs/config';
 import { typeORMConfig } from './configs/typeorm.config';
+import { AppleModule } from './apple/apple.module';
 
 @Module({
   imports: [ 
    BoardsModule, 
-  TypeOrmModule.forRoot(typeORMConfig),
+  TypeOrmModule.forRoot(typeORMConfig), AppleModule,
   ],
   
   controllers: [AppController],

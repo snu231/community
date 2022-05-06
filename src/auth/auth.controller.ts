@@ -1,14 +1,15 @@
-import { BadRequestException, Body, Controller, Delete, Get, Post, Req, Res, UseGuards, ValidationPipe } from '@nestjs/common';
+import {  Body, Controller, Delete, Get, Post, Req, Res, UseGuards, ValidationPipe   } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { AuthCredentialDto } from './dto/authcredential.dto';
 import { DeleteUserByUserIdlDto } from './dto/deleteUserByUserId.dto';
 import { LoginlDto } from './dto/login.dto';
-import { GetUser } from './get-user.decorator';
-
-import { applyDecorators } from '@nestjs/common';
+import { GetUser } from './get-user.decorator';;
 
 import {User} from './user.entity'
+
+import { Request, Response } from 'express';
+import { AuthUserGuard } from './auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -21,40 +22,43 @@ export class AuthController {
         return await this.authService.singUp(authcredential);
     }
 
-    
 
-    @Get('/profile')
-    @UseGuards(AuthGuard())
-    async getUserProfile(@GetUser() user: User) : Promise<User>{
-
-        return await this.authService.getUserProfileById(user.id) ;
-    }
 
 
     @Delete('/signout')
     async deleteUserById( @Body() deleteUserByUserIdDto : DeleteUserByUserIdlDto  ) : Promise<void> {
         return await this.authService.deleteUserByID( deleteUserByUserIdDto );
     }
-    /*
-    @Post('auth/signin')    
-    async signIn(@Body(ValidationPipe) loginInfo : LoginlDto, @Res({passthrough: true}) res: Response  ) : Promise<void> {
+    
+    @Post('signin')    
+    async signIn(@Req() req, @Body(ValidationPipe) loginInfo : LoginlDto,  @Res({passthrough: true}) res :  Response ) : Promise<any> {
 
-        const token =  await this.authService.signIn(loginInfo);
+        const token =  await this.authService.signIn(loginInfo);     
 
-        res.cookie('Authentication', token , {
+        //await res.setHeader('Authorization', 'Bearer' + token  );
+
+        //console.log( res   );
+
+        await res.cookie('Authentication', token , {
             domain: 'localhost',
-            path : '/',
-            httpOnly: 'true',
+            path: '/',
+            //maxAge: 10000,
+            httpOnly: true
+        });
+        
+        await res.send({
+            message: 'success'
         });
 
-    }
 
-    @Delete('auth/logout')
+    }
+    
+    @Delete('/logout')
     async logout( @Res({passthrough: true}) res : Response ): Promise<void> {
         //const { token, ...option } = this.authService.logout();
         const token = '';
+
         res.cookie('Authentication', token, {
-            token: '',
             domain: 'localhost',
             path: '/',
             httpOnly: true,
@@ -62,13 +66,13 @@ export class AuthController {
         });
 
     }
-
-    /*
+    
+    
     @Post('/test')
     @UseGuards(AuthGuard() )
-    test(@Req() req){
-        console.log('user', req.user );
-    }*/
+    test(@GetUser() user:User  ){
+        console.log('user', user  );
+    }
 
     
 }
