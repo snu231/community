@@ -8,6 +8,7 @@ import { JwtStrategy } from './jwt.strategy';
 import { UserRepository } from './user.repository';
 
 import * as config from 'config';
+//import { BoardLikeRepository } from './boardLike.repository';
 
 const jwtConfig = config.get('jwt');
 @Module({
@@ -19,10 +20,10 @@ const jwtConfig = config.get('jwt');
         expiresIn: jwtConfig.expiresIn
       }
     }),
-    TypeOrmModule.forFeature([UserRepository])
+    TypeOrmModule.forFeature([UserRepository ])
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],
-  exports: [JwtStrategy, PassportModule],
+  exports: [JwtStrategy, PassportModule ],
 })
 export class AuthModule {}

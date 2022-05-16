@@ -22,15 +22,34 @@ export class AuthController {
         return await this.authService.singUp(authcredential);
     }
 
+    @Get('/check/userid')
+    async checkUserId(@Body('userid') userid: string ) : Promise<string>{
+        const hasSameUserId = this.authService.checkUserId(userid);
 
+        if(!hasSameUserId) return "사용할 수 있는 ID입니다";
+        return "이미 존재하는 ID입니다";
+    }
 
+    @Get('/check/username')
+    async checkUserName(@Body('userid') userid: string ) : Promise<string>{
+        const hasSameUserId = this.authService.checkUserName(userid);
+
+        if(!hasSameUserId) return "사용할 수 있는 닉네임입니다";
+        return "이미 존재하는 닉네임입니다";
+    }
+
+    @Delete('/soft_signout')
+    async softDeleteUserById( @Body() deleteUserByUserIdDto: DeleteUserByUserIdlDto ): Promise<void>{
+        
+        this.authService.softDeleteUserByID(deleteUserByUserIdDto);
+    }
 
     @Delete('/signout')
     async deleteUserById( @Body() deleteUserByUserIdDto : DeleteUserByUserIdlDto  ) : Promise<void> {
         return await this.authService.deleteUserByID( deleteUserByUserIdDto );
     }
     
-    @Post('signin')    
+    @Post('/login')    
     async signIn(@Req() req, @Body(ValidationPipe) loginInfo : LoginlDto,  @Res({passthrough: true}) res :  Response ) : Promise<any> {
 
         const token =  await this.authService.signIn(loginInfo);     
@@ -69,8 +88,8 @@ export class AuthController {
     
     
     @Post('/test')
-    @UseGuards(AuthGuard() )
-    test(@GetUser() user:User  ){
+    @UseGuards( AuthUserGuard  )
+    test( @GetUser() user:User  ){
         console.log('user', user  );
     }
 
